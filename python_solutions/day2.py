@@ -5,7 +5,7 @@ p1depth = 0
 p2depth = 0
 aim = 0
 
-# part 1
+# part 1 + 2
 with open("../inputs/day2.txt", "r") as f:
     for line in f:
         input = line.split()
