@@ -1,13 +1,8 @@
 import os
+from utils import readFile
 
 def binaryToDecimal(n):
     return int(n,2)
-
-def readFile(filename):
-    with open(filename, "r") as file:
-        lines = file.readlines()
-        lines = [line.rstrip() for line in lines]    
-    return lines
 
 def countOnesZeros(inputs):
     ones = [0]
