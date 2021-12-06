@@ -10,4 +10,7 @@ def listContains(A, B):
 
 # Returns the values not contained in either list
 def listDiff(li1, li2):
-    return list(set(li1) - set(li2)) + list(set(li2) - set(li1))    
+    return list(set(li1) - set(li2)) + list(set(li2) - set(li1))
+
+def init2DList(size):
+  return [[0] * (size) for _ in range(size)]
