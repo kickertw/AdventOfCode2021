@@ -22,7 +22,7 @@ for input in rawInputs:
 p1Answer = 0
 p2Answer = 0
 
-ventGrid = grid = defaultdict(int)
+grid = defaultdict(int)
 diagonals = []
 for vent in allVents:
   if (vent.notDiagonal):
