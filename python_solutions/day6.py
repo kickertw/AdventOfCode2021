@@ -6,25 +6,11 @@ lanternfish = defaultdict(int)
 for idx, input in enumerate(inputs):
     lanternfish[idx] = input
 
-# Part 1 - This ain't going to work for part 2 😢
+# Part 1 + 2
 days = 256
 addCount = 0
 newFishCountdownStart = 8
 defaultCountdownStart = 6
-# for x in range(days):
-#     for key in lanternfish:
-#         if lanternfish[key] > 0:
-#             lanternfish[key] -= 1
-#         else:
-#             lanternfish[key] = defaultCountdownStart
-#             addCount += 1
-
-#     if addCount > 0:
-#         for x in range(addCount):
-#             lanternfish[len(lanternfish)] = newFishCountdownStart
-#         addCount = 0            
-#     #print(list(lanternfish.values()))
-# print(len(lanternfish))
 
 fishCounts = [0] * 9
 for ii in range(9):
