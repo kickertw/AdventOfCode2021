@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 # n = total number in the series
 # a = first number in the series
 # d = common difference
