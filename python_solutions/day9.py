@@ -29,7 +29,7 @@ def findBasinSize(rowIdx, colIdx, heightMap):
 
     return retVal
 
-rawInputs = readFile('./inputs/day9.txt')
+rawInputs = readFile('../inputs/day9.txt')
 
 heightMap = []
 for rawInput in rawInputs:

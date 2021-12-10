@@ -17,3 +17,9 @@ def listDiff(li1, li2):
 
 def init2DList(size):
   return [[0] * (size) for _ in range(size)]
+
+def getIndexByVal(list, val):
+    try:
+        return list.index(val)
+    except ValueError:
+        return -1
