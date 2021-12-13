@@ -1,17 +1,21 @@
 from utils import *
 
-def getPermutations(startList, caveSystem, usedList = []):
+def getPermutations(startList, caveSystem, usedList = [], mulligan = False):
   retVal = []
   start = startList[-1]
 
-  if start not in caveSystem or start in usedList or start == 'end':
+  if ((start not in caveSystem or start in usedList) and not mulligan) or start == 'end':
     return [startList]
 
   newUsedList = usedList.copy()
 
   # If it's lowercase, we can't go there anymore
   if start.islower():
-    newUsedList.append(start)
+    if start in newUsedList:
+      mulligan = False
+    
+    if start not in newUsedList:
+      newUsedList.append(start)
 
   children = caveSystem[start]
   for child in children:
@@ -19,7 +23,7 @@ def getPermutations(startList, caveSystem, usedList = []):
     newCaveSystem = caveSystem.copy()    
     newList.append(child)
 
-    perms = getPermutations(newList, newCaveSystem, newUsedList)
+    perms = getPermutations(newList, newCaveSystem, newUsedList, mulligan)
     for perm in perms:
       retVal.append(perm)
     
@@ -47,3 +51,7 @@ for input in rawInputs:
 allRoutes = getPermutations(['start'], caveSystem)
 allValidRoutes = [route for route in allRoutes if 'end' in route ]
 print(f"Part 1 = {len(allValidRoutes)}")
+
+allRoutes = getPermutations(['start'], caveSystem, mulligan=True)
+allValidRoutes = [route for route in allRoutes if 'end' in route ]
+print(f"Part 2 = {len(allValidRoutes)}")
