@@ -2,87 +2,74 @@ import sys
 from utils import *
 from collections import defaultdict
 
-class Graph():
-    def __init__(self):
-        """
-        self.edges is a dict of all possible next nodes
-        e.g. {'X': ['A', 'B', 'C', 'E'], ...}
-        self.weights has all the weights between two nodes,
-        with the two nodes as a tuple as the key
-        e.g. {('X', 'A'): 7, ('X', 'B'): 2, ...}
-        """
-        self.edges = defaultdict(list)
-        self.weights = {}
-    
-    def add_edge(self, from_node, to_node, weight):
-        # Note: assumes edges are bi-directional
-        self.edges[from_node].append(to_node)
-        self.edges[to_node].append(from_node)
-        self.weights[(from_node, to_node)] = weight
-        self.weights[(to_node, from_node)] = weight
+def getChildren(riskMap, currentX, currentY):
+  children = []
+  #up
+  if currentY - 1 >= 0:
+    children.append((currentX, currentY-1, riskMap[currentY-1][currentX]))
+  #down
+  if currentY + 1 < len(riskMap):
+    children.append((currentX, currentY+1, riskMap[currentY+1][currentX]))
+  #left
+  if currentX - 1 >= 0:
+    children.append((currentX-1, currentY, riskMap[currentY][currentX-1]))
+  #right
+  if currentX + 1 < len(riskMap[0]):
+    children.append((currentX+1, currentY, riskMap[currentY][currentX+1]))
 
-def createGraph(inputs):
-  riskMap = []
-  for input in inputs:
-    riskMap.append([int(i) for i in input])
+  return children
 
-  edges = []
-  # Horizontal edges
+def getNextUnvisited(spTree, unvisited):
+  retVal = ''
+  minWeight = 1000001
+  for node in unvisited:
+    if spTree[node][0] < minWeight:
+      minWeight = spTree[node][0]
+      retVal = node
+
+  return retVal
+
+def runDijkstras(riskMap):
+  visited = set()
+  unvisited = {'0,0'}
+
+  # Creating 2 things
+  # - list of all unvisited nodes
+  # - creating a shortest path tree (the node and the shortest path to that node)
+  #   - spTree key = coordinate / value = (distance/weight, previous node)
+  spTree = {'0,0': (0, '')}
   for yy in range(len(riskMap)):
-    for xx in range(len(riskMap[0])-1):
-      edge = (f"{xx},{yy}", f"{xx+1},{yy}", riskMap[yy][xx+1])
-      edges.append(edge)
+    for xx in range(len(riskMap[0])):
+      if xx != 0 or yy != 0:
+        coord = f"{xx},{yy}"
+        unvisited.add(coord)
+        spTree[coord] = (1000000, '')        
+
+  currentNode = '0,0'
+  while len(unvisited) > 0:
+    nodeXY = currentNode.split(',')
+    children = getChildren(riskMap, int(nodeXY[0]), int(nodeXY[1]))    
+
+    for node in children:
+      (cnodeX, cnodeY, weight) = node
+      weight += spTree[currentNode][0]
+      key = f'{cnodeX},{cnodeY}'
+
+      if key not in visited:
+        spTree[key] = (weight, currentNode) if weight < spTree[key][0] else spTree[key]
+      
+    visited.add(currentNode)
+    unvisited.remove(currentNode)
+    if len(unvisited) > 0:
+      currentNode = getNextUnvisited(spTree, unvisited)
   
-  for xx in range(len(riskMap[0])):
-    for yy in range(len(riskMap)-1):    
-      edge = (f"{xx},{yy}", f"{xx},{yy+1}", riskMap[yy+1][xx])
-      edges.append(edge)
+  return spTree
 
-  return edges
+rawInputs = readFile('./inputs/day15.txt')
 
-def dijsktra(graph, initial, end):
-    # shortest paths is a dict of nodes
-    # whose value is a tuple of (previous node, weight)
-    shortest_paths = {initial: (None, 0)}
-    current_node = initial
-    visited = set()
-    
-    while current_node != end:
-        visited.add(current_node)
-        destinations = graph.edges[current_node]
-        weight_to_current_node = shortest_paths[current_node][1]
+riskMap = []
+for input in rawInputs:
+  riskMap.append([int(i) for i in input])
 
-        for next_node in destinations:
-            weight = graph.weights[(current_node, next_node)] + weight_to_current_node
-            if next_node not in shortest_paths:
-                shortest_paths[next_node] = (current_node, weight)
-            else:
-                current_shortest_weight = shortest_paths[next_node][1]
-                if current_shortest_weight > weight:
-                    shortest_paths[next_node] = (current_node, weight)
-        
-        next_destinations = {node: shortest_paths[node] for node in shortest_paths if node not in visited}
-        if not next_destinations:
-            return "Route Not Possible"
-        # next node is the destination with the lowest weight
-        current_node = min(next_destinations, key=lambda k: next_destinations[k][1])
-    
-    # Work back through destinations in shortest path
-    path = []
-    while current_node is not None:
-        path.append(current_node)
-        next_node = shortest_paths[current_node][0]
-        current_node = next_node
-    # Reverse path
-    path = path[::-1]
-    return path
-
-rawInputs = readFile('../inputs/day15.txt')
-edges = createGraph(rawInputs)
-graph = Graph()
-
-for edge in edges:
-  graph.add_edge(*edge)
-
-path = dijsktra(graph, '0,0', '9,9')
-print(path)
+spTree = runDijkstras(riskMap)
+print(spTree['99,99'])
