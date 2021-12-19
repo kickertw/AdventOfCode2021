@@ -22,16 +22,6 @@ def getNextUnvisited(touched, visited):
   allKeys = sorted(touched.keys())
   return touched[allKeys[0]][0]
 
-# def getNextUnvisited(spTree, unvisited):
-#   retVal = ''
-#   minWeight = 1000001
-#   for node in unvisited:
-#     if spTree[node][0] < minWeight:
-#       minWeight = spTree[node][0]
-#       retVal = node
-
-#   return retVal
-
 def trackTouched(touched, node, oldWeight, newWeight):
   touched[oldWeight] = [x for x in touched[oldWeight] if x != node]
   if len(touched[oldWeight]) == 0:
@@ -91,6 +81,23 @@ def runDijkstras(riskMap):
   
   return spTree
 
+def createP2RiskMap(riskMap):
+  newRiskMaps = defaultdict(list)
+
+  for ii in range(9):
+    inc = ii + 1
+    newRiskMaps[ii] = [[y + inc - 9 if y + inc > 9 else y + inc for y in x] for x in riskMap]
+
+  newRiskMap = []
+  startMap = riskMap  
+  for jj in range(5):
+    for ii in range(len(riskMap)):
+      newRiskMap.append(startMap[ii] + newRiskMaps[jj][ii] + newRiskMaps[jj+1][ii] + newRiskMaps[jj+2][ii] + newRiskMaps[jj+3][ii])
+    startMap = newRiskMaps[jj]
+
+  return newRiskMap
+
+
 rawInputs = readFile('./inputs/day15.txt')
 
 riskMap = []
@@ -101,3 +108,10 @@ spTree = runDijkstras(riskMap)
 bottomRight = f'{len(riskMap)-1},{len(riskMap[0])-1}'
 
 print(f'Part 1 = {spTree[bottomRight][0]}')
+
+#P2
+p2RiskMap = createP2RiskMap(riskMap)
+spTree = runDijkstras(p2RiskMap)
+bottomRight = f'{len(p2RiskMap)-1},{len(p2RiskMap[0])-1}'
+
+print(f'Part 2 = {spTree[bottomRight][0]}')
