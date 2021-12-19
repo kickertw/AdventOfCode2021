@@ -1,8 +1,7 @@
-import sys
 from utils import *
 from collections import defaultdict
 
-def getChildren(riskMap, currentX, currentY):
+def getChildren(riskMap, visited, currentX, currentY):
   children = []
   #up
   if currentY - 1 >= 0:
@@ -17,21 +16,43 @@ def getChildren(riskMap, currentX, currentY):
   if currentX + 1 < len(riskMap[0]):
     children.append((currentX+1, currentY, riskMap[currentY][currentX+1]))
 
-  return children
+  return [c for c in children if f'{c[0]},{c[1]}' not in visited]
 
-def getNextUnvisited(spTree, unvisited):
-  retVal = ''
-  minWeight = 1000001
-  for node in unvisited:
-    if spTree[node][0] < minWeight:
-      minWeight = spTree[node][0]
-      retVal = node
+def getNextUnvisited(touched, visited):
+  allKeys = sorted(touched.keys())
+  return touched[allKeys[0]][0]
 
-  return retVal
+# def getNextUnvisited(spTree, unvisited):
+#   retVal = ''
+#   minWeight = 1000001
+#   for node in unvisited:
+#     if spTree[node][0] < minWeight:
+#       minWeight = spTree[node][0]
+#       retVal = node
+
+#   return retVal
+
+def trackTouched(touched, node, oldWeight, newWeight):
+  touched[oldWeight] = [x for x in touched[oldWeight] if x != node]
+  if len(touched[oldWeight]) == 0:
+    del touched[oldWeight]
+  
+  if newWeight in touched:
+    touched[newWeight].append(node)
+  else:
+    touched[newWeight] = [node]
+
+def removeFromTouched(touched, node, weight):
+    # remove anything we don't care to track (i.e. - already visited)
+    touched[weight].remove(node)
+    
+    if len(touched[weight]) == 0:
+      del touched[weight]  
 
 def runDijkstras(riskMap):
   visited = set()
   unvisited = {'0,0'}
+  touched = defaultdict(list)
 
   # Creating 2 things
   # - list of all unvisited nodes
@@ -48,20 +69,25 @@ def runDijkstras(riskMap):
   currentNode = '0,0'
   while len(unvisited) > 0:
     nodeXY = currentNode.split(',')
-    children = getChildren(riskMap, int(nodeXY[0]), int(nodeXY[1]))    
+    children = getChildren(riskMap, visited, int(nodeXY[0]), int(nodeXY[1]))    
 
     for node in children:
       (cnodeX, cnodeY, weight) = node
       weight += spTree[currentNode][0]
       key = f'{cnodeX},{cnodeY}'
 
-      if key not in visited:
-        spTree[key] = (weight, currentNode) if weight < spTree[key][0] else spTree[key]
+      oldWeight = spTree[key][0]
+      if weight < oldWeight:          
+          spTree[key] = (weight, currentNode)
+          trackTouched(touched, key, oldWeight, weight)
       
     visited.add(currentNode)
     unvisited.remove(currentNode)
+   
     if len(unvisited) > 0:
-      currentNode = getNextUnvisited(spTree, unvisited)
+      if currentNode != '0,0':
+        removeFromTouched(touched, currentNode, spTree[currentNode][0])
+      currentNode = getNextUnvisited(touched, visited) #getNextUnvisited(spTree, unvisited)
   
   return spTree
 
@@ -72,4 +98,6 @@ for input in rawInputs:
   riskMap.append([int(i) for i in input])
 
 spTree = runDijkstras(riskMap)
-print(spTree['99,99'])
+bottomRight = f'{len(riskMap)-1},{len(riskMap[0])-1}'
+
+print(f'Part 1 = {spTree[bottomRight][0]}')
