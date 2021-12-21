@@ -23,3 +23,10 @@ def getIndexByVal(list, val):
         return list.index(val)
     except ValueError:
         return -1
+
+def convertHexToBin(input):
+  h_size = len(input) * 4
+  return (bin(int(input, 16))[2:]).zfill(h_size)
+
+def convertBinToDec(input):
+  return int(input,2)
