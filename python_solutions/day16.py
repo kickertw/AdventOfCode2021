@@ -44,6 +44,6 @@ def parsePacket(p, isHex = True):
   
   return allValues, input
 
-vals, _ = parsePacket('A0016C880162017C3686B18A3D4780')
+vals, _ = parsePacket('620080001611562C8802118E34')
 for key in vals:
   print(f'Version [{key}] = {vals[key]}')
