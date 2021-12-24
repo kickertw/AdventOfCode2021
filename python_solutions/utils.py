@@ -30,3 +30,7 @@ def convertHexToBin(input):
 
 def convertBinToDec(input):
   return int(input,2)
+
+def debugPrint(debugOn = False, printVal = ''):
+  if debugOn:
+    print(printVal)
