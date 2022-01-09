@@ -2,9 +2,9 @@
 def rotate(x, y, z):
   retVal = []
   retVal.append((x,y,z))
-  retVal.append((x,z,-1*y))
-  retVal.append((x,-1*y,-1*z))
   retVal.append((x,-1*z,y))
+  retVal.append((x,-1*y,-1*z))
+  retVal.append((x,z,-1*y))
 
   return retVal
 
@@ -14,7 +14,7 @@ def findPermutations(tuples):
   for tuple in tuples:
     origX, origY, origZ = tuple
     
-    # face right (x) and rotate
+    # face front and rotate
     x = origX
     y = origY
     z = origZ
@@ -27,9 +27,9 @@ def findPermutations(tuples):
       retVal[2].append(points[2])
       retVal[3].append(points[3])
 
-    # face back (-z) and rotate
-    x = origZ
-    z = origX * -1
+    # face back and rotate
+    x = origX * -1
+    z = origZ * -1
     points = rotate(x,y,z)
     if len(retVal) < 5:
       retVal = retVal + [[p] for p in points]
@@ -39,9 +39,9 @@ def findPermutations(tuples):
       retVal[6].append(points[2])
       retVal[7].append(points[3])
 
-    # face left (-x) and rotate
-    x = origX * -1
-    z = origZ * -1
+    # face right and rotate
+    x = origZ * -1
+    z = origX
     points = rotate(x,y,z)
     if len(retVal) < 9:
       retVal = retVal + [[p] for p in points]
@@ -51,9 +51,9 @@ def findPermutations(tuples):
       retVal[10].append(points[2])
       retVal[11].append(points[3])
 
-    #face front (z) and rotate
-    x = origZ * -1
-    z = origX
+    #face left and rotate
+    x = origZ
+    z = origX * -1
     points = rotate(x,y,z)
     if len(retVal) < 13:
       retVal = retVal + [[p] for p in points]
@@ -63,8 +63,8 @@ def findPermutations(tuples):
       retVal[14].append(points[2])
       retVal[15].append(points[3])
 
-    #face up (y) and rotate
-    x = origY
+    #face up and rotate
+    x = origY * -1
     y = origX
     z = origZ
     points = rotate(x,y,z)
@@ -76,7 +76,7 @@ def findPermutations(tuples):
       retVal[18].append(points[2])
       retVal[19].append(points[3])
 
-    #face down (-y) and rotate
+    #face down and rotate
     x = origY
     y = origX * -1
     points = rotate(x,y,z)
