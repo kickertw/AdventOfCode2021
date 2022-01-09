@@ -90,8 +90,42 @@ def findPermutations(tuples):
 
   return retVal
 
-input = [(-1,-1,1), (-2,-2,2), (-3,-3,3), (-2,-3,1), (5,6,-4), (8,0,7)]
-allPerms = findPermutations(input)
+def orderScanners(scanners):
+# Sorting the list of tuples using second item 
+  Len = len(scanners)
+  for i in range(Len):
+      for j in range(0, (Len - i - 1)):
+          if(scanners[j][0] > scanners[j+1][0] or 
+             (scanners[j][0] == scanners[j+1][0] and scanners[j][1] > scanners[j+1][1]) or
+             (scanners[j][0] == scanners[j+1][0] and scanners[j][1] == scanners[j+1][1] and scanners[j][2] > scanners[j+1][2])):
+              temp = scanners[j]
+              scanners[j] = scanners[j+1]
+              scanners[j+1] = temp
+  return scanners
 
-for perm in allPerms:
-  print(perm)
+def isNeighbor(scannerAList, scannerBList, minScannerOverlap = 12):
+  scannerAList = orderScanners(scannerAList)
+  for scanners in scannerBList:
+    scanners = orderScanners(scanners)
+    diffs = []
+    for ii in range(len(scanners)):
+      diff = (scannerAList[ii][0] - scanners[ii][0], scannerAList[ii][1] - scanners[ii][1], scannerAList[ii][2] - scanners[ii][2])
+      diffs.append(diff)
+    
+    diffs = orderScanners(diffs)
+    counter = 1
+    for ii in range(len(diffs)-1):
+      if (diffs[ii] == diffs[ii+1]):
+        counter += 1
+
+    if (counter >= minScannerOverlap):
+      return True
+  
+  return False
+
+input = [(0,2,0), (4,1,0), (3,3,0)]
+input2 = [(0,-5,0), (-1,-1,0), (1,-2,0)]
+scannerB = findPermutations(input2)
+
+FoundNeighbor = isNeighbor(input, scannerB, 3)
+print(FoundNeighbor)
